@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<header style="background: #007bff; color: #fff; padding: 20px 0; text-align: center;">
+    <h2>Welcome to Our Rental Management System</h2>
+</header>
+<div
+    style="background: #e9f7fe; color: #155774; padding: 16px 24px; border-radius: 8px; margin: 24px auto 0; max-width: 700px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);">
+    <strong>Why choose us?</strong>
+    <ul style="margin: 12px 0 0 20px; padding: 0;">
+        <li>24/7 clean water supply</li>
+        <li>Reliable electricity</li>
+        <li>Excellent security with CCTV and guards</li>
+        <li>Ample parking space</li>
+        <li>Children's play area</li>
+        <li>Garbage collection services</li>
+        <li>Proximity to schools, hospitals, and shopping centers</li>
+        <li>Fast internet connectivity available</li>
+        <li>Pet-friendly environment</li>
+    </ul>
+</div>
+<div
+    style="max-width: 700px; margin: 24px auto 0; background: #fff; padding: 16px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.05);">
+    <h3 style="margin-top: 0;">Available Units & Pricing</h3>
+    <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr style="background: #f0f0f0;">
+                <th style="padding: 8px; border: 1px solid #ddd;">Unit Type</th>
+                <th style="padding: 8px; border: 1px solid #ddd;">Monthly Rent (KES)</th>
+            </tr>
+        </thead>
+    </table>
+    <h3 style="margin-top:32px;">Tenant Application Portal</h3>
+    <form id="tenantApplicationForm" style="margin-top:16px; display:flex; flex-direction:column; gap:12px; max-width:500px;">
+        <input type="text" id="applicantName" placeholder="Full Name" required>
+        <input type="text" id="idNumber" placeholder="Identification Card Number" required>
+        <label for="passportPhoto">Upload Passport Photo (max 1MB):</label>
+        <input type="file" id="passportPhoto" accept="image/*" required>
+        <label for="idCardFront">Upload ID Card (Front, max 1MB):</label>
+        <input type="file" id="idCardFront" accept="image/*" required>
+        <label for="idCardBack">Upload ID Card (Back, max 1MB):</label>
+        <input type="file" id="idCardBack" accept="image/*" required>
+        <script>
+            // File size validation (1MB max)
+            function validateFileSize(inputId) {
+            const input = document.getElementById(inputId);
+            input.addEventListener('change', function() {
+                if (this.files[0] && this.files[0].size > 1 * 1024 * 1024) {
+                alert('File size must be less than 1MB.');
+                this.value = '';
+                }
+            });
+            }
+            validateFileSize('passportPhoto');
+
+            // Share options
+            // Simple share buttons for WhatsApp, Email, and Copy Link
+            const shareDiv = document.createElement('div');
+            shareDiv.style.marginTop = '16px';
+            /*
+            const express = require('express');
+            const cors = require('cors');
+            const multer = require('multer');
+            const app = express();
+            const upload = multer({ limits: { fileSize: 1 * 1024 * 1024 } }); // 1MB limit
+
+            app.use(cors());
+
+            app.post('/submit-application', upload.fields([
+                { name: 'passportPhoto' },
+                { name: 'idCardFront' },
+                { name: 'idCardBack' }
+            ]), (req, res) => {
+                // Access form fields: req.body
+                // Access files: req.files
+                // Save data to database or process as needed
+                res.json({ success: true });
+            });
+            shareDiv.appendChild(notificationsNote);
+            shareDiv.innerHTML = `
+                <label style="font-weight:bold; margin-bottom:4px; display:block;">Share this property:</label>
+                <button type="button" id="shareWhatsapp" style="margin-right:8px;">WhatsApp</button>
+                <button type="button" id="shareEmail" style="margin-right:8px;">Email</button>
+                <button type="button" id="copyLink">Copy Link</button>
+            `;
+            document.getElementById('tenantApplicationForm').appendChild(shareDiv);
+
+            document.getElementById('shareWhatsapp').onclick = function() {
+                const url = window.location.href;
+                const text = encodeURIComponent('Check out this rental property: ' + url);
+                window.open('https://wa.me/?text=' + text, '_blank');
+            };
+            document.getElementById('shareEmail').onclick = function() {
+                const url = window.location.href;
+                const subject = encodeURIComponent('Rental Property Recommendation');
+                const body = encodeURIComponent('Hi,\n\nI thought you might be interested in this rental property:\n' + url);
+                window.location.href = `mailto:?subject=${subject}&body=${body}`;
+            };
+            document.getElementById('copyLink').onclick = function() {
+                navigator.clipboard.writeText(window.location.href).then(function() {
+                    alert('Link copied to clipboard!');
+                });
+            };
+            validateFileSize('idCardFront');
+            validateFileSize('idCardBack');
+        </script>
+        <input type="email" id="applicantEmail" placeholder="Email Address" required>
+        <input type="tel" id="applicantPhone" placeholder="Phone Number" required>
+        <select id="desiredUnit" required>
+            <option value="">Select Unit Type</option>
+            <option value="Single Room">Single Room</option>
+            <option value="Bed sitter">Bed sitter</option>
+            <option value="2 Bedroom">2 Bedroom</option>
+            <option value="3 Bedroom">3 Bedroom</option>
+            <option value="Studio Apartment">Studio Apartment</option>
+            <option value="Maisonette">Maisonette</option>
+        </select>
+        <input type="number" id="rentalAmount" placeholder="Monthly Rent (KES)" min="0" required>
+        <textarea id="otherQualifications" placeholder="Other Qualifications (e.g. employment, references, etc.)" rows="3" style="resize:vertical;"></textarea>
+        <button type="submit">Apply Now</button>
+    </form>
+    <div id="applicationSuccess" style="display:none; color:green; margin-top:12px;">
+        Application submitted successfully! We will contact you soon.
+    </div>
+    <script>
+        document.getElementById('tenantApplicationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Basic validation for ID card and required fields is handled by 'required' attributes
+            document.getElementById('tenantApplicationForm').reset();
+            document.getElementById('applicationSuccess').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('applicationSuccess').style.display = 'none';
+            }, 4000);
+        });
+    </script>
+        </thead>
+        <tbody>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Single Room</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">10000</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Bed sitter</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">12,000</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">2 Bedroom</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">22,000</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">3 Bedroom</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">35,000</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Studio Apartment</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">15,000</td>
+            </tr>
+            <tr>
+                <td style="padding: 8px; border: 1px solid #ddd;">Maisonette</td>
+                <td style="padding: 8px; border: 1px solid #ddd;">45,000</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="margin-top: 12px; color: #555;">Contact us for more details or to schedule a viewing!</p>
+    <strong>Contact Information:</strong>
+    <p>Email: bonywanga8@gmail.com</p>
+    <p>Phone: +254 748327586</p>
+</div>
+
+<head>
+    <title>Rental Management System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            background: #fff;
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        input,
+        select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            flex: 1;
+        }
+
+        button {
+            padding: 8px 16px;
+            background: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #f0f0f0;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+        }
+
+        .delete-btn:hover {
+            background: #a71d2a;
+        }
+
+        .paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .pay-btn {
+            background: #28a745;
+        }
+
+        .pay-btn:hover {
+            background: #1e7e34;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Rental Management System</h1>
+        <form id="rentalForm">
+            <input type="text" id="tenantName" placeholder="Tenant Name" required>
+            <input type="text" id="property" placeholder="Property Address" required>
+            <input type="number" id="rent" placeholder="Monthly Rent" min="0" required>
+            <select id="status" required>
+                <option value="">Status</option>
+                <option value="Occupied">Occupied</option>
+                <option value="Vacant">Vacant</option>
+            </select>
+            <button type="submit">Add Rental</button>
+        </form>
+        <table id="rentalTable">
+            <thead>
+                <tr>
+                    <th>Tenant Name</th>
+                    <th>Property</th>
+                    <th>Rent</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rental rows will go here -->
+            </tbody>
+        </table>
+    </div>
+    <script>
+        const rentalForm = document.getElementById('rentalForm');
+        const rentalTableBody = document.querySelector('#rentalTable tbody');
+        let rentals = [];
+
+        function renderTable() {
+            rentalTableBody.innerHTML = '';
+            rentals.forEach((rental, idx) => {
+                const row = document.createElement('tr');
+                row.className = rental.status === 'Paid' ? 'paid' : '';
+                row.innerHTML = `
+                    <td>${rental.tenantName}</td>
+                    <td>${rental.property}</td>
+                    <td>$${parseFloat(rental.rent).toFixed(2)}</td>
+                    <td>${rental.status}</td>
+                    <td>
+                        ${rental.status === 'Occupied' ? `<button class="pay-btn" onclick="markAsPaid(${idx})">Mark as Paid</button>` : ''}
+                        <button class="delete-btn" onclick="deleteRental(${idx})">Delete</button>
+                    </td>
+                `;
+                rentalTableBody.appendChild(row);
+            });
+        }
+
+        rentalForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const tenantName = document.getElementById('tenantName').value.trim();
+            const property = document.getElementById('property').value.trim();
+            const rent = document.getElementById('rent').value;
+            const status = document.getElementById('status').value;
+            if (tenantName && property && rent && status) {
+                rentals.push({ tenantName, property, rent, status });
+                renderTable();
+                rentalForm.reset();
+            }
+        });
+
+        window.deleteRental = function (idx) {
+            rentals.splice(idx, 1);
+            renderTable();
+        };
+
+        window.markAsPaid = function (idx) {
+            rentals[idx].status = 'Paid';
+            renderTable();
+        };
+
+        // Initial render
+        renderTable();
+    </script>
+</body>
+<footer style="background: #007bff; color: #fff; text-align: center; padding: 16px 0; margin-top: 40px;">
+    &copy; 2025 Rental Management System. All rights reserved.
+</footer>
+</html>
